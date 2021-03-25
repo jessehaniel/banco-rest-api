@@ -92,6 +92,8 @@ class ClienteRestControllerTest {
     @Test
     void inserir_forbidden() {
         mockMvc.perform(post("/clientes?pf=")
+            .content(getClienteJson())
+            .contentType(MediaType.APPLICATION_JSON)
             .with(httpBasic("player", "player123")))
             .andExpect(status().isForbidden());
     }

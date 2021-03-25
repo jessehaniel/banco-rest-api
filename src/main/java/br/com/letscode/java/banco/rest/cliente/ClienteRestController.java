@@ -6,8 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,17 +27,20 @@ public class ClienteRestController {
     }
 
     @GetMapping("page")
+    @PreAuthorize("hasRole('PLAYER')")
     public Page<ClientePF> listarClientes(Pageable pageable) {
         return this.repository.findAll(pageable);
     }
 
     //http://localhost:8080/clientes?nome=jes
+    @PreAuthorize("isAuthenticated()")
     @GetMapping(params = "nome")
     public List<ClientePF> buscarCliente(@RequestParam String nome) {//jes
         return this.repository.findByNomeContaining(nome);
     }
 
     //http://localhost:8080/clientes?pf=
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(params = "pf")
     @ResponseStatus(HttpStatus.CREATED)
     public Cliente inserir(@Valid @RequestBody ClientePF cliente) {
@@ -51,6 +53,7 @@ public class ClienteRestController {
     }
 
     //http://localhost:8080/clientes?pj=
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(params = "pj")
     @ResponseStatus(HttpStatus.CREATED)
     public Cliente inserir(@RequestBody ClientePJ cliente) {
@@ -58,10 +61,5 @@ public class ClienteRestController {
         return cliente;
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> runtimeHandler(Exception ex) {
-        log.error(ex.getMessage(), ex);
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 
 }

@@ -1,7 +1,6 @@
 package br.com.letscode.java.banco.rest.security;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,12 +19,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests(authorize -> {
                 authorize
                     .antMatchers("/h2-console/**").permitAll()
-                    .antMatchers(HttpMethod.GET, "/clientes").authenticated()
-                    .antMatchers(HttpMethod.GET, "/clientes/page").hasRole("PLAYER")
-                    .mvcMatchers(HttpMethod.POST, "/clientes").hasRole("ADMIN");
+                    .antMatchers( "/clientes").authenticated();
+                //Essas opções abaixo são funcionalmente idênticas aos Method Security (@PreAuthorize)
+//                    .antMatchers(HttpMethod.GET, "/clientes/page").hasRole("PLAYER")
+//                    .mvcMatchers(HttpMethod.POST, "/clientes").hasRole("ADMIN");
             })
             .authorizeRequests()
-            .anyRequest().authenticated()
+            .anyRequest().denyAll()
             .and()
             .formLogin().and()
             .httpBasic();
